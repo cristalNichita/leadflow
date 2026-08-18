@@ -5,7 +5,19 @@ namespace App\Models;
 use App\Enums\CustomerStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $company
+ * @property string|null $email
+ * @property string|null $phone
+ * @property CustomerStatus $status
+ * @property string|null $notes
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 class Customer extends Model
 {
     protected $fillable = [

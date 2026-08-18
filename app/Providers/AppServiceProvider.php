@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Repositories\Contracts\CustomerRepositoryInterface;
+use App\Repositories\CustomerRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            CustomerRepositoryInterface::class,
+            CustomerRepository::class,
+        );
     }
 
     /**
