@@ -6,10 +6,12 @@ use App\Models\User;
 use App\Repositories\ActivityRepository;
 use App\Repositories\Contracts\ActivityRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
+use App\Repositories\Contracts\DashboardRepositoryInterface;
 use App\Repositories\Contracts\DealRepositoryInterface;
 use App\Repositories\Contracts\LeadRepositoryInterface;
 use App\Repositories\Contracts\TaskRepositoryInterface;
 use App\Repositories\CustomerRepository;
+use App\Repositories\DashboardRepository;
 use App\Repositories\DealRepository;
 use App\Repositories\LeadRepository;
 use App\Repositories\TaskRepository;
@@ -50,6 +52,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ActivityRepositoryInterface::class,
             ActivityRepository::class,
+        );
+
+        $this->app->bind(
+            DashboardRepositoryInterface::class,
+            DashboardRepository::class,
         );
     }
 

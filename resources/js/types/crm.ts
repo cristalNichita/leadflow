@@ -132,6 +132,41 @@ export type Task = {
     updated_at: string;
 };
 
+// Activity
+export type Activity = {
+    id: number;
+    description: string;
+
+    user: {
+        id: number;
+        name: string;
+    } | null;
+
+    created_at: string;
+};
+
+// Dashboard
+export type DashboardMetrics = {
+    total_customers: number;
+    active_leads: number;
+    open_deals: number;
+    won_revenue: number;
+};
+
+export type LeadStatusBreakdown = {
+    new: number;
+    contacted: number;
+    qualified: number;
+    won: number;
+    lost: number;
+};
+
+export type DealStatusBreakdown = {
+    open: number;
+    won: number;
+    lost: number;
+};
+
 // Pagination
 export type PaginationLinks = {
     first: string | null;

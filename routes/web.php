@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DealController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\TaskController;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::resource('customers', CustomerController::class);
     Route::resource('leads', LeadController::class);
