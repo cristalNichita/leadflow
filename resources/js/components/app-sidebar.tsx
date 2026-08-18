@@ -1,5 +1,10 @@
 import { Link } from '@inertiajs/react';
-import { LayoutDashboardIcon, UsersRound, Target } from 'lucide-react';
+import {
+    LayoutDashboardIcon,
+    UsersRound,
+    Target,
+    Handshake,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -14,6 +19,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
+import { index as dealsIndex } from '@/routes/deals';
 import { index as leadsIndex } from '@/routes/leads';
 import type { NavItem } from '@/types';
 
@@ -35,6 +41,11 @@ const crmItems: NavItem[] = [
         title: 'Leads',
         href: leadsIndex(),
         icon: Target,
+    },
+    {
+        title: 'Deals',
+        href: dealsIndex(),
+        icon: Handshake,
     },
 ];
 

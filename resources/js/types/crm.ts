@@ -2,6 +2,9 @@ export type CustomerStatus = 'active' | 'inactive';
 
 export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
 
+export type DealStatus = 'open' | 'won' | 'lost';
+
+// Customers
 export type Customer = {
     id: number;
     name: string;
@@ -22,6 +25,7 @@ export type SelectOption = {
     name: string;
 };
 
+// Leads
 export type LeadCustomer = {
     id: number;
     name: string;
@@ -49,6 +53,39 @@ export type Lead = {
     updated_at: string;
 };
 
+// Deals
+export type DealCustomer = {
+    id: number;
+    name: string;
+    company: string | null;
+};
+
+export type DealAssignedUser = {
+    id: number;
+    name: string;
+    email: string;
+};
+
+export type Deal = {
+    id: number;
+    title: string;
+
+    customer_id: number;
+    customer: DealCustomer;
+
+    assigned_user_id: number | null;
+    assigned_user: DealAssignedUser | null;
+
+    value: string;
+    status: DealStatus;
+    expected_close_date: string | null;
+    notes: string | null;
+
+    created_at: string;
+    updated_at: string;
+};
+
+// Pagination
 export type PaginationLinks = {
     first: string | null;
     last: string | null;
