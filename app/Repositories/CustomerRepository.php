@@ -37,10 +37,10 @@ final class CustomerRepository implements CustomerRepositoryInterface
 
             $query->where(function ($query) use ($search): void {
                 $query
-                    ->where('name', 'ilike', $search)
-                    ->orWhere('company', 'ilike', $search)
-                    ->orWhere('email', 'ilike', $search)
-                    ->orWhere('phone', 'ilike', $search);
+                    ->whereLike('name', $search)
+                    ->orWhereLike('company', $search)
+                    ->orWhereLike('email', $search)
+                    ->orWhereLike('phone', $search);
             });
         }
 
