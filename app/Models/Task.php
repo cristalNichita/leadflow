@@ -5,7 +5,21 @@ namespace App\Models;
 use App\Enums\TaskPriority;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string|null $description
+ * @property int|null $assigned_user_id
+ * @property int|null $customer_id
+ * @property int|null $deal_id
+ * @property TaskPriority $priority
+ * @property Carbon|null $due_date
+ * @property bool $completed
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 class Task extends Model
 {
     protected $fillable = [
@@ -30,15 +44,18 @@ class Task extends Model
 
     /**
      * @return BelongsTo<User, $this>
-     **/
+     */
     public function assignedUser(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_user_id');
+        return $this->belongsTo(
+            User::class,
+            'assigned_user_id',
+        );
     }
 
     /**
      * @return BelongsTo<Customer, $this>
-     **/
+     */
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -46,7 +63,7 @@ class Task extends Model
 
     /**
      * @return BelongsTo<Deal, $this>
-     **/
+     */
     public function deal(): BelongsTo
     {
         return $this->belongsTo(Deal::class);
