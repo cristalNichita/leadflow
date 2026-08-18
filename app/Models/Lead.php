@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\LeadStatus;
+use Database\Factories\LeadFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -21,6 +23,9 @@ use Illuminate\Support\Carbon;
  */
 class Lead extends Model
 {
+    /** @use HasFactory<LeadFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'customer_id',

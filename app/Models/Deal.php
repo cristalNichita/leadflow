@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\DealStatus;
+use Database\Factories\DealFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +24,9 @@ use Illuminate\Support\Carbon;
  */
 class Deal extends Model
 {
+    /** @use HasFactory<DealFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'customer_id',
