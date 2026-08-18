@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
+ * @property UserRole $role
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -77,5 +78,15 @@ class User extends Authenticatable
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === UserRole::Manager;
     }
 }
