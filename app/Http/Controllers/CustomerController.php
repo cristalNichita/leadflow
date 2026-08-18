@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\User;
 use App\Services\CustomerService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -60,7 +61,15 @@ class CustomerController extends Controller
     public function store(
         StoreCustomerRequest $request,
     ): RedirectResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
         $customer = $this->customers->create(
+            $user,
             $request->data(),
         );
 
@@ -115,7 +124,15 @@ class CustomerController extends Controller
         UpdateCustomerRequest $request,
         Customer $customer,
     ): RedirectResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
         $customer = $this->customers->update(
+            $user,
             $customer,
             $request->data(),
         );
@@ -129,14 +146,26 @@ class CustomerController extends Controller
         );
     }
 
-    public function destroy(Customer $customer): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        Customer $customer,
+    ): RedirectResponse {
         Gate::authorize(
             'delete',
             $customer,
         );
 
-        $this->customers->delete($customer);
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
+        $this->customers->delete(
+            $user,
+            $customer,
+        );
 
         return to_route(
             'customers.index',

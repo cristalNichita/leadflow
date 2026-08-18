@@ -10,6 +10,7 @@ use App\Models\Deal;
 use App\Models\User;
 use App\Services\DealService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -71,7 +72,12 @@ class DealController extends Controller
     public function store(
         StoreDealRequest $request,
     ): RedirectResponse {
+        $user = $request->user();
+
+        abort_unless($user instanceof User, 403);
+
         $deal = $this->deals->create(
+            $user,
             $request->data(),
         );
 
@@ -165,6 +171,7 @@ class DealController extends Controller
     }
 
     public function destroy(
+        Request $request,
         Deal $deal,
     ): RedirectResponse {
         Gate::authorize(
@@ -172,7 +179,14 @@ class DealController extends Controller
             $deal,
         );
 
-        $this->deals->delete($deal);
+        $user = $request->user();
+
+        abort_unless($user instanceof User, 403);
+
+        $this->deals->delete(
+            $user,
+            $deal,
+        );
 
         return to_route(
             'deals.index',

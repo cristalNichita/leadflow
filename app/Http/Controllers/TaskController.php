@@ -11,6 +11,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Services\TaskService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -72,7 +73,15 @@ class TaskController extends Controller
     public function store(
         StoreTaskRequest $request,
     ): RedirectResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
         $task = $this->tasks->create(
+            $user,
             $request->data(),
         );
 
@@ -168,6 +177,7 @@ class TaskController extends Controller
     }
 
     public function destroy(
+        Request $request,
         Task $task,
     ): RedirectResponse {
         Gate::authorize(
@@ -175,7 +185,17 @@ class TaskController extends Controller
             $task,
         );
 
-        $this->tasks->delete($task);
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
+        $this->tasks->delete(
+            $user,
+            $task,
+        );
 
         return to_route(
             'tasks.index',
@@ -189,9 +209,19 @@ class TaskController extends Controller
         UpdateTaskCompletionRequest $request,
         Task $task,
     ): RedirectResponse {
-        $completed = $request->boolean('completed');
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
+        $completed = $request->boolean(
+            'completed',
+        );
 
         $this->tasks->setCompleted(
+            $user,
             $task,
             $completed,
         );

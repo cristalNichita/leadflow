@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Repositories\ActivityRepository;
+use App\Repositories\Contracts\ActivityRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\DealRepositoryInterface;
 use App\Repositories\Contracts\LeadRepositoryInterface;
@@ -43,6 +45,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             TaskRepositoryInterface::class,
             TaskRepository::class,
+        );
+
+        $this->app->bind(
+            ActivityRepositoryInterface::class,
+            ActivityRepository::class,
         );
     }
 

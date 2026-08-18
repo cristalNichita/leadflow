@@ -9,11 +9,13 @@ use App\Models\User;
 use App\Repositories\Contracts\DealRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 final readonly class DealService
 {
     public function __construct(
         private DealRepositoryInterface $deals,
+        private ActivityService $activities,
     ) {}
 
     /**
@@ -29,9 +31,25 @@ final readonly class DealService
         );
     }
 
-    public function create(DealData $data): Deal
-    {
-        return $this->deals->create($data);
+    public function create(
+        User $user,
+        DealData $data,
+    ): Deal {
+        return DB::transaction(function () use (
+            $user,
+            $data,
+        ): Deal {
+            $deal = $this->deals->create(
+                $data,
+            );
+
+            $this->activities->dealCreated(
+                $user,
+                $deal,
+            );
+
+            return $deal;
+        });
     }
 
     public function update(
@@ -39,6 +57,8 @@ final readonly class DealService
         Deal $deal,
         DealData $data,
     ): Deal {
+        $previousStatus = $deal->status;
+
         if (! $user->isAdmin() && ! $user->isManager()) {
             $data = new DealData(
                 title: $deal->title,
@@ -53,15 +73,49 @@ final readonly class DealService
             );
         }
 
-        return $this->deals->update(
+        return DB::transaction(function () use (
+            $user,
             $deal,
             $data,
-        );
+            $previousStatus,
+        ): Deal {
+            $deal = $this->deals->update(
+                $deal,
+                $data,
+            );
+
+            if ($previousStatus !== $deal->status) {
+                $this->activities->dealStatusChanged(
+                    $user,
+                    $deal,
+                    $previousStatus,
+                    $deal->status,
+                );
+            }
+
+            return $deal;
+        });
     }
 
-    public function delete(Deal $deal): void
-    {
-        $this->deals->delete($deal);
+    public function delete(
+        User $user,
+        Deal $deal,
+    ): void {
+        DB::transaction(function () use (
+            $user,
+            $deal,
+        ): void {
+            $title = $deal->title;
+
+            $this->deals->delete(
+                $deal,
+            );
+
+            $this->activities->dealDeleted(
+                $user,
+                $title,
+            );
+        });
     }
 
     public function details(Deal $deal): Deal

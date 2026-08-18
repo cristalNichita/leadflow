@@ -9,11 +9,13 @@ use App\Models\User;
 use App\Repositories\Contracts\LeadRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 final readonly class LeadService
 {
     public function __construct(
         private LeadRepositoryInterface $leads,
+        private ActivityService $activities,
     ) {}
 
     /**
@@ -29,9 +31,25 @@ final readonly class LeadService
         );
     }
 
-    public function create(LeadData $data): Lead
-    {
-        return $this->leads->create($data);
+    public function create(
+        User $user,
+        LeadData $data,
+    ): Lead {
+        return DB::transaction(function () use (
+            $user,
+            $data,
+        ): Lead {
+            $lead = $this->leads->create(
+                $data,
+            );
+
+            $this->activities->leadCreated(
+                $user,
+                $lead,
+            );
+
+            return $lead;
+        });
     }
 
     public function update(
@@ -39,6 +57,8 @@ final readonly class LeadService
         Lead $lead,
         LeadData $data,
     ): Lead {
+        $previousStatus = $lead->status;
+
         if (! $user->isAdmin() && ! $user->isManager()) {
             $data = new LeadData(
                 title: $lead->title,
@@ -51,15 +71,49 @@ final readonly class LeadService
             );
         }
 
-        return $this->leads->update(
+        return DB::transaction(function () use (
+            $user,
             $lead,
             $data,
-        );
+            $previousStatus,
+        ): Lead {
+            $lead = $this->leads->update(
+                $lead,
+                $data,
+            );
+
+            if ($previousStatus !== $lead->status) {
+                $this->activities->leadStatusChanged(
+                    $user,
+                    $lead,
+                    $previousStatus,
+                    $lead->status,
+                );
+            }
+
+            return $lead;
+        });
     }
 
-    public function delete(Lead $lead): void
-    {
-        $this->leads->delete($lead);
+    public function delete(
+        User $user,
+        Lead $lead,
+    ): void {
+        DB::transaction(function () use (
+            $user,
+            $lead,
+        ): void {
+            $title = $lead->title;
+
+            $this->leads->delete(
+                $lead,
+            );
+
+            $this->activities->leadDeleted(
+                $user,
+                $title,
+            );
+        });
     }
 
     public function details(Lead $lead): Lead

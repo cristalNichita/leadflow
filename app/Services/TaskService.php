@@ -9,11 +9,13 @@ use App\Models\User;
 use App\Repositories\Contracts\TaskRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 final readonly class TaskService
 {
     public function __construct(
         private TaskRepositoryInterface $tasks,
+        private ActivityService $activities,
     ) {}
 
     /**
@@ -29,9 +31,25 @@ final readonly class TaskService
         );
     }
 
-    public function create(TaskData $data): Task
-    {
-        return $this->tasks->create($data);
+    public function create(
+        User $user,
+        TaskData $data,
+    ): Task {
+        return DB::transaction(function () use (
+            $user,
+            $data,
+        ): Task {
+            $task = $this->tasks->create(
+                $data,
+            );
+
+            $this->activities->taskCreated(
+                $user,
+                $task,
+            );
+
+            return $task;
+        });
     }
 
     public function update(
@@ -39,6 +57,8 @@ final readonly class TaskService
         Task $task,
         TaskData $data,
     ): Task {
+        $wasCompleted = $task->completed;
+
         if (! $user->isAdmin() && ! $user->isManager()) {
             $data = new TaskData(
                 title: $task->title,
@@ -47,20 +67,61 @@ final readonly class TaskService
                 customerId: $task->customer_id,
                 dealId: $task->deal_id,
                 priority: $task->priority,
-                dueDate: $task->due_date?->format('Y-m-d'),
+                dueDate: $task->due_date?->format(
+                    'Y-m-d',
+                ),
                 completed: $data->completed,
             );
         }
 
-        return $this->tasks->update(
+        return DB::transaction(function () use (
+            $user,
             $task,
             $data,
-        );
+            $wasCompleted,
+        ): Task {
+            $task = $this->tasks->update(
+                $task,
+                $data,
+            );
+
+            if ($wasCompleted !== $task->completed) {
+                if ($task->completed) {
+                    $this->activities->taskCompleted(
+                        $user,
+                        $task,
+                    );
+                } else {
+                    $this->activities->taskReopened(
+                        $user,
+                        $task,
+                    );
+                }
+            }
+
+            return $task;
+        });
     }
 
-    public function delete(Task $task): void
-    {
-        $this->tasks->delete($task);
+    public function delete(
+        User $user,
+        Task $task,
+    ): void {
+        DB::transaction(function () use (
+            $user,
+            $task,
+        ): void {
+            $title = $task->title;
+
+            $this->tasks->delete(
+                $task,
+            );
+
+            $this->activities->taskDeleted(
+                $user,
+                $title,
+            );
+        });
     }
 
     public function details(Task $task): Task
@@ -93,12 +154,37 @@ final readonly class TaskService
     }
 
     public function setCompleted(
+        User $user,
         Task $task,
         bool $completed,
     ): Task {
-        return $this->tasks->setCompleted(
+        if ($task->completed === $completed) {
+            return $task;
+        }
+
+        return DB::transaction(function () use (
+            $user,
             $task,
             $completed,
-        );
+        ): Task {
+            $task = $this->tasks->setCompleted(
+                $task,
+                $completed,
+            );
+
+            if ($task->completed) {
+                $this->activities->taskCompleted(
+                    $user,
+                    $task,
+                );
+            } else {
+                $this->activities->taskReopened(
+                    $user,
+                    $task,
+                );
+            }
+
+            return $task;
+        });
     }
 }

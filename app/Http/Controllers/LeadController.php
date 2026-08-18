@@ -10,6 +10,7 @@ use App\Models\Lead;
 use App\Models\User;
 use App\Services\LeadService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -71,7 +72,15 @@ class LeadController extends Controller
     public function store(
         StoreLeadRequest $request,
     ): RedirectResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
         $lead = $this->leads->create(
+            $user,
             $request->data(),
         );
 
@@ -165,6 +174,7 @@ class LeadController extends Controller
     }
 
     public function destroy(
+        Request $request,
         Lead $lead,
     ): RedirectResponse {
         Gate::authorize(
@@ -172,7 +182,17 @@ class LeadController extends Controller
             $lead,
         );
 
-        $this->leads->delete($lead);
+        $user = $request->user();
+
+        abort_unless(
+            $user instanceof User,
+            403,
+        );
+
+        $this->leads->delete(
+            $user,
+            $lead,
+        );
 
         return to_route(
             'leads.index',
