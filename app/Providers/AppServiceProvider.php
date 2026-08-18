@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
+use App\Repositories\Contracts\LeadRepositoryInterface;
 use App\Repositories\CustomerRepository;
+use App\Repositories\LeadRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             CustomerRepositoryInterface::class,
             CustomerRepository::class,
+        );
+
+        $this->app->bind(
+            LeadRepositoryInterface::class,
+            LeadRepository::class,
         );
     }
 

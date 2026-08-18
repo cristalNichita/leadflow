@@ -5,7 +5,20 @@ namespace App\Models;
 use App\Enums\LeadStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property int $customer_id
+ * @property int|null $assigned_user_id
+ * @property string $estimated_value
+ * @property string|null $source
+ * @property LeadStatus $status
+ * @property string|null $notes
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 class Lead extends Model
 {
     protected $fillable = [
@@ -28,7 +41,7 @@ class Lead extends Model
 
     /**
      * @return BelongsTo<Customer, $this>
-     **/
+     */
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -36,9 +49,12 @@ class Lead extends Model
 
     /**
      * @return BelongsTo<User, $this>
-     **/
+     */
     public function assignedUser(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_user_id');
+        return $this->belongsTo(
+            User::class,
+            'assigned_user_id',
+        );
     }
 }
