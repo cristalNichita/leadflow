@@ -2,17 +2,14 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Eye, Pencil, Plus, Search, Target, Trash2 } from 'lucide-react';
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
+import { LeadStatusBadge } from '@/components/crm/status-badges';
 import { LeadDeleteDialog } from '@/components/leads/lead-delete-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { formatCurrency } from '@/lib/formatters';
+import { show as customerShow } from '@/routes/customers';
 import { create, edit, index, show } from '@/routes/leads';
-import type {
-    Lead,
-    LeadStatus,
-    PaginatedResource,
-    SelectOption,
-} from '@/types';
+import type { Lead, PaginatedResource, SelectOption } from '@/types';
 
 type Props = {
     leads: PaginatedResource<Lead>;
@@ -192,7 +189,7 @@ export default function LeadsIndex({ leads, filters, users, can }: Props) {
                                             <th className="px-5 py-3 text-left font-medium">
                                                 Customer
                                             </th>
-                                            <th className="px-5 py-3 text-left font-medium">
+                                            <th className="px-5 py-3 text-right font-medium">
                                                 Value
                                             </th>
                                             <th className="px-5 py-3 text-left font-medium">
@@ -228,24 +225,45 @@ export default function LeadsIndex({ leads, filters, users, can }: Props) {
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {lead.customer.name}
+                                                    <Link
+                                                        href={customerShow(
+                                                            lead.customer.id,
+                                                        )}
+                                                        className="font-medium hover:underline"
+                                                    >
+                                                        {lead.customer.name}
+                                                    </Link>
+
+                                                    {lead.customer.company && (
+                                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                                            {
+                                                                lead.customer
+                                                                    .company
+                                                            }
+                                                        </p>
+                                                    )}
                                                 </td>
 
-                                                <td className="px-5 py-4 font-medium">
-                                                    {formatValue(
+                                                <td className="px-5 py-4 text-right font-medium tabular-nums">
+                                                    {formatCurrency(
                                                         lead.estimated_value,
                                                     )}
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    <LeadBadge
+                                                    <LeadStatusBadge
                                                         status={lead.status}
                                                     />
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {lead.assigned_user?.name ??
-                                                        'Unassigned'}
+                                                    {lead.assigned_user ? (
+                                                        lead.assigned_user.name
+                                                    ) : (
+                                                        <span className="text-muted-foreground">
+                                                            Unassigned
+                                                        </span>
+                                                    )}
                                                 </td>
 
                                                 <td className="px-5 py-4">
@@ -351,25 +369,6 @@ export default function LeadsIndex({ leads, filters, users, can }: Props) {
             </div>
         </>
     );
-}
-
-function LeadBadge({ status }: { status: LeadStatus }) {
-    const labels: Record<LeadStatus, string> = {
-        new: 'New',
-        contacted: 'Contacted',
-        qualified: 'Qualified',
-        won: 'Won',
-        lost: 'Lost',
-    };
-
-    return <Badge variant="secondary">{labels[status]}</Badge>;
-}
-
-function formatValue(value: string): string {
-    return new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(Number(value));
 }
 
 LeadsIndex.layout = {

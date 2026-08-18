@@ -8,8 +8,8 @@ import {
     Trash2,
     UserRound,
 } from 'lucide-react';
+import { LeadStatusBadge } from '@/components/crm/status-badges';
 import { LeadDeleteDialog } from '@/components/leads/lead-delete-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -18,6 +18,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { formatCurrency, formatDate } from '@/lib/formatters';
 import { edit, index } from '@/routes/leads';
 import type { Lead, LeadStatus } from '@/types';
 
@@ -80,7 +81,7 @@ export default function ShowLead({ lead, can }: Props) {
                 <div className="grid gap-4 md:grid-cols-3">
                     <InfoCard
                         title="Estimated value"
-                        value={formatValue(lead.estimated_value)}
+                        value={formatCurrency(lead.estimated_value)}
                         icon={CircleDollarSign}
                     />
 
@@ -147,22 +148,6 @@ export default function ShowLead({ lead, can }: Props) {
     );
 }
 
-function LeadStatusBadge({ status }: { status: LeadStatus }) {
-    const classes: Record<LeadStatus, string> = {
-        new: 'bg-slate-500/15 text-slate-500 hover:bg-slate-500/15',
-        contacted: 'bg-blue-500/15 text-blue-500 hover:bg-blue-500/15',
-        qualified: 'bg-amber-500/15 text-amber-500 hover:bg-amber-500/15',
-        won: 'bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/15',
-        lost: 'bg-red-500/15 text-red-500 hover:bg-red-500/15',
-    };
-
-    return (
-        <Badge variant="secondary" className={classes[status]}>
-            {statusLabel(status)}
-        </Badge>
-    );
-}
-
 function InfoCard({
     title,
     value,
@@ -209,19 +194,6 @@ function statusLabel(status: LeadStatus): string {
     };
 
     return labels[status];
-}
-
-function formatValue(value: string): string {
-    return new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(Number(value));
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(value));
 }
 
 ShowLead.layout = {

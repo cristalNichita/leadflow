@@ -20,6 +20,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { formatDate } from '@/lib/formatters';
 import { edit, index } from '@/routes/customers';
 import type { Customer } from '@/types';
 
@@ -230,12 +231,6 @@ function Detail({
             </div>
         </div>
     );
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(value));
 }
 
 ShowCustomer.layout = {

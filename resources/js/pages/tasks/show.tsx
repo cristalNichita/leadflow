@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import type { LucideIcon } from 'lucide-react';
 import { CalendarDays, Pencil, Trash2, UserRound } from 'lucide-react';
+import { TaskPriorityBadge } from '@/components/crm/status-badges';
 import { TaskCompletionButton } from '@/components/tasks/task-completion-button';
 import { TaskDeleteDialog } from '@/components/tasks/task-delete-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { formatDate } from '@/lib/formatters';
 import { edit, index } from '@/routes/tasks';
 import type { Task, TaskPriority } from '@/types';
 
@@ -43,7 +45,7 @@ export default function ShowTask({ task, can }: Props) {
                                 {task.title}
                             </h1>
 
-                            <PriorityBadge priority={task.priority} />
+                            <TaskPriorityBadge priority={task.priority} />
 
                             <Badge
                                 variant={
@@ -176,20 +178,6 @@ export default function ShowTask({ task, can }: Props) {
     );
 }
 
-function PriorityBadge({ priority }: { priority: TaskPriority }) {
-    const classes: Record<TaskPriority, string> = {
-        low: 'bg-slate-500/15 text-slate-500 hover:bg-slate-500/15',
-        medium: 'bg-amber-500/15 text-amber-500 hover:bg-amber-500/15',
-        high: 'bg-red-500/15 text-red-500 hover:bg-red-500/15',
-    };
-
-    return (
-        <Badge variant="secondary" className={classes[priority]}>
-            {priorityLabel(priority)}
-        </Badge>
-    );
-}
-
 function InfoCard({
     title,
     value,
@@ -248,12 +236,6 @@ function priorityLabel(priority: TaskPriority): string {
     };
 
     return labels[priority];
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(value));
 }
 
 ShowTask.layout = {

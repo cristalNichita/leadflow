@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
+import { CustomerStatusBadge } from '@/components/crm/status-badges';
 import { CustomerDeleteDialog } from '@/components/customers/customer-delete-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { create, edit, index, show } from '@/routes/customers';
@@ -215,27 +215,23 @@ export default function CustomersIndex({ customers, filters, can }: Props) {
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    <Badge
-                                                        variant={
-                                                            customer.status ===
-                                                            'active'
-                                                                ? 'default'
-                                                                : 'secondary'
-                                                        }
-                                                    >
-                                                        {customer.status ===
-                                                        'active'
-                                                            ? 'Active'
-                                                            : 'Inactive'}
-                                                    </Badge>
+                                                    <CustomerStatusBadge
+                                                        status={customer.status}
+                                                    />
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {customer.leads_count ?? 0}
+                                                    <span className="inline-flex min-w-7 items-center justify-center rounded-md bg-muted px-2 py-1 text-xs font-medium">
+                                                        {customer.leads_count ??
+                                                            0}
+                                                    </span>
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {customer.deals_count ?? 0}
+                                                    <span className="inline-flex min-w-7 items-center justify-center rounded-md bg-muted px-2 py-1 text-xs font-medium">
+                                                        {customer.deals_count ??
+                                                            0}
+                                                    </span>
                                                 </td>
 
                                                 <td className="px-5 py-4">

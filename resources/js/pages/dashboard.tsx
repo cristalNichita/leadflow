@@ -8,7 +8,7 @@ import {
     Target,
     UsersRound,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { TaskPriorityBadge } from '@/components/crm/status-badges';
 import {
     Card,
     CardContent,
@@ -16,6 +16,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
 import { index as dealsIndex } from '@/routes/deals';
@@ -28,7 +29,6 @@ import type {
     DealStatusBreakdown,
     LeadStatusBreakdown,
     Task,
-    TaskPriority,
 } from '@/types';
 
 type Props = {
@@ -91,7 +91,7 @@ export default function Dashboard({
 
                     <MetricCard
                         title="Won revenue"
-                        value={formatMoney(metrics.won_revenue)}
+                        value={formatCurrency(metrics.won_revenue)}
                         description="Value of won deals"
                         icon={CircleDollarSign}
                         href={dealsIndex()}
@@ -106,22 +106,27 @@ export default function Dashboard({
                             {
                                 label: 'New',
                                 value: leadStatus.new,
+                                barClass: 'bg-slate-500',
                             },
                             {
                                 label: 'Contacted',
                                 value: leadStatus.contacted,
+                                barClass: 'bg-blue-500',
                             },
                             {
                                 label: 'Qualified',
                                 value: leadStatus.qualified,
+                                barClass: 'bg-amber-500',
                             },
                             {
                                 label: 'Won',
                                 value: leadStatus.won,
+                                barClass: 'bg-emerald-500',
                             },
                             {
                                 label: 'Lost',
                                 value: leadStatus.lost,
+                                barClass: 'bg-red-500',
                             },
                         ]}
                     />
@@ -133,14 +138,17 @@ export default function Dashboard({
                             {
                                 label: 'Open',
                                 value: dealStatus.open,
+                                barClass: 'bg-blue-500',
                             },
                             {
                                 label: 'Won',
                                 value: dealStatus.won,
+                                barClass: 'bg-emerald-500',
                             },
                             {
                                 label: 'Lost',
                                 value: dealStatus.lost,
+                                barClass: 'bg-red-500',
                             },
                         ]}
                     />
@@ -238,7 +246,7 @@ export default function Dashboard({
                                                     </p>
                                                 </div>
 
-                                                <PriorityBadge
+                                                <TaskPriorityBadge
                                                     priority={task.priority}
                                                 />
                                             </div>
@@ -286,7 +294,7 @@ function MetricCard({
 }) {
     return (
         <Link href={href}>
-            <Card className="h-full transition-colors hover:border-foreground/20">
+            <Card className="group h-full transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-md">
                 <CardContent className="flex items-start justify-between p-6">
                     <div>
                         <p className="text-sm text-muted-foreground">{title}</p>
@@ -300,8 +308,8 @@ function MetricCard({
                         </p>
                     </div>
 
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
-                        <Icon className="size-5 text-muted-foreground" />
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <Icon className="size-5" />
                     </div>
                 </CardContent>
             </Card>
@@ -319,6 +327,7 @@ function StatusCard({
     items: {
         label: string;
         value: number;
+        barClass: string;
     }[];
 }) {
     const total = items.reduce((sum, item) => sum + item.value, 0);
@@ -348,7 +357,7 @@ function StatusCard({
 
                             <div className="h-2 overflow-hidden rounded-full bg-muted">
                                 <div
-                                    className="h-full rounded-full bg-primary transition-all"
+                                    className={`h-full rounded-full transition-all ${item.barClass}`}
                                     style={{
                                         width: `${percentage}%`,
                                     }}
@@ -366,16 +375,6 @@ function StatusCard({
             </CardContent>
         </Card>
     );
-}
-
-function PriorityBadge({ priority }: { priority: TaskPriority }) {
-    const labels: Record<TaskPriority, string> = {
-        low: 'Low',
-        medium: 'Medium',
-        high: 'High',
-    };
-
-    return <Badge variant="secondary">{labels[priority]}</Badge>;
 }
 
 function EmptyMessage({ children }: { children: React.ReactNode }) {
@@ -404,27 +403,6 @@ function isOverdue(task: Task): boolean {
     }
 
     return new Date(`${task.due_date}T23:59:59`) < new Date();
-}
-
-function formatMoney(value: number): string {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-    }).format(value);
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(`${value}T00:00:00`));
-}
-
-function formatDateTime(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-    }).format(new Date(value));
 }
 
 Dashboard.layout = {

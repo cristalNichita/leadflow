@@ -22,10 +22,23 @@ export function TaskCompletionButton({ task, compact = false }: Props) {
 
                     <Button
                         type="submit"
-                        variant={task.completed ? 'outline' : 'default'}
+                        variant={
+                            compact
+                                ? 'ghost'
+                                : task.completed
+                                  ? 'outline'
+                                  : 'default'
+                        }
                         size={compact ? 'icon' : 'default'}
                         disabled={processing}
                         title={task.completed ? 'Reopen task' : 'Complete task'}
+                        className={
+                            compact
+                                ? task.completed
+                                    ? 'text-muted-foreground'
+                                    : 'text-emerald-400 hover:text-emerald-300'
+                                : undefined
+                        }
                     >
                         {task.completed ? <RotateCcw /> : <Check />}
 

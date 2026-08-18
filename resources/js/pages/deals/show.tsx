@@ -7,8 +7,8 @@ import {
     Trash2,
     UserRound,
 } from 'lucide-react';
+import { DealStatusBadge } from '@/components/crm/status-badges';
 import { DealDeleteDialog } from '@/components/deals/deal-delete-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -17,6 +17,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { formatCurrency, formatDate } from '@/lib/formatters';
 import { edit, index } from '@/routes/deals';
 import type { Deal, DealStatus } from '@/types';
 
@@ -81,7 +82,7 @@ export default function ShowDeal({ deal, can }: Props) {
                 <div className="grid gap-4 md:grid-cols-3">
                     <InfoCard
                         title="Deal value"
-                        value={formatMoney(deal.value)}
+                        value={formatCurrency(deal.value)}
                         icon={CircleDollarSign}
                     />
 
@@ -125,7 +126,7 @@ export default function ShowDeal({ deal, can }: Props) {
 
                             <Detail
                                 label="Value"
-                                value={formatMoney(deal.value)}
+                                value={formatCurrency(deal.value)}
                             />
 
                             <Detail
@@ -163,20 +164,6 @@ export default function ShowDeal({ deal, can }: Props) {
                 </div>
             </div>
         </>
-    );
-}
-
-function DealStatusBadge({ status }: { status: DealStatus }) {
-    const classes: Record<DealStatus, string> = {
-        open: 'bg-blue-500/15 text-blue-500 hover:bg-blue-500/15',
-        won: 'bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/15',
-        lost: 'bg-red-500/15 text-red-500 hover:bg-red-500/15',
-    };
-
-    return (
-        <Badge variant="secondary" className={classes[status]}>
-            {statusLabel(status)}
-        </Badge>
     );
 }
 
@@ -224,21 +211,6 @@ function statusLabel(status: DealStatus): string {
     };
 
     return labels[status];
-}
-
-function formatMoney(value: string): string {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    }).format(Number(value));
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(value));
 }
 
 ShowDeal.layout = {

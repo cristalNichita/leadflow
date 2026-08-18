@@ -2,18 +2,16 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Eye, ListTodo, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
+import { TaskPriorityBadge } from '@/components/crm/status-badges';
 import { TaskCompletionButton } from '@/components/tasks/task-completion-button';
 import { TaskDeleteDialog } from '@/components/tasks/task-delete-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { formatDate } from '@/lib/formatters';
+import { show as customerShow } from '@/routes/customers';
+import { show as dealShow } from '@/routes/deals';
 import { create, edit, index, show } from '@/routes/tasks';
-import type {
-    PaginatedResource,
-    SelectOption,
-    Task,
-    TaskPriority,
-} from '@/types';
+import type { PaginatedResource, SelectOption, Task } from '@/types';
 
 type Props = {
     tasks: PaginatedResource<Task>;
@@ -252,13 +250,13 @@ export default function TasksIndex({ tasks, filters, users, can }: Props) {
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    <PriorityBadge
+                                                    <TaskPriorityBadge
                                                         priority={task.priority}
                                                     />
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {relationLabel(task)}
+                                                    <TaskRelation task={task} />
                                                 </td>
 
                                                 <td className="px-5 py-4">
@@ -380,16 +378,6 @@ export default function TasksIndex({ tasks, filters, users, can }: Props) {
     );
 }
 
-function PriorityBadge({ priority }: { priority: TaskPriority }) {
-    const labels: Record<TaskPriority, string> = {
-        low: 'Low',
-        medium: 'Medium',
-        high: 'High',
-    };
-
-    return <Badge variant="secondary">{labels[priority]}</Badge>;
-}
-
 function DueDate({ task }: { task: Task }) {
     if (!task.due_date) {
         return <span className="text-muted-foreground">—</span>;
@@ -406,22 +394,30 @@ function DueDate({ task }: { task: Task }) {
     );
 }
 
-function relationLabel(task: Task): string {
+function TaskRelation({ task }: { task: Task }) {
     if (task.customer) {
-        return task.customer.name;
+        return (
+            <Link
+                href={customerShow(task.customer.id)}
+                className="font-medium hover:underline"
+            >
+                {task.customer.name}
+            </Link>
+        );
     }
 
     if (task.deal) {
-        return task.deal.title;
+        return (
+            <Link
+                href={dealShow(task.deal.id)}
+                className="font-medium hover:underline"
+            >
+                {task.deal.title}
+            </Link>
+        );
     }
 
-    return '—';
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(value));
+    return <span className="text-muted-foreground">—</span>;
 }
 
 TasksIndex.layout = {

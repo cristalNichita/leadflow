@@ -2,17 +2,14 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Eye, Handshake, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
+import { DealStatusBadge } from '@/components/crm/status-badges';
 import { DealDeleteDialog } from '@/components/deals/deal-delete-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { formatCurrency, formatDate } from '@/lib/formatters';
+import { show as customerShow } from '@/routes/customers';
 import { create, edit, index, show } from '@/routes/deals';
-import type {
-    Deal,
-    DealStatus,
-    PaginatedResource,
-    SelectOption,
-} from '@/types';
+import type { Deal, PaginatedResource, SelectOption } from '@/types';
 
 type Props = {
     deals: PaginatedResource<Deal>;
@@ -204,7 +201,7 @@ export default function DealsIndex({ deals, filters, users, can }: Props) {
                                                 Customer
                                             </th>
 
-                                            <th className="px-5 py-3 text-left font-medium">
+                                            <th className="px-5 py-3 text-right font-medium">
                                                 Value
                                             </th>
 
@@ -242,20 +239,42 @@ export default function DealsIndex({ deals, filters, users, can }: Props) {
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {deal.customer.name}
+                                                    <Link
+                                                        href={customerShow(
+                                                            deal.customer.id,
+                                                        )}
+                                                        className="font-medium hover:underline"
+                                                    >
+                                                        {deal.customer.name}
+                                                    </Link>
+
+                                                    {deal.customer.company && (
+                                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                                            {
+                                                                deal.customer
+                                                                    .company
+                                                            }
+                                                        </p>
+                                                    )}
                                                 </td>
 
-                                                <td className="px-5 py-4 font-medium">
-                                                    {formatMoney(deal.value)}
+                                                <td className="px-5 py-4 text-right font-medium tabular-nums">
+                                                    {formatCurrency(deal.value)}
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    <DealBadge
+                                                    <DealStatusBadge
                                                         status={deal.status}
                                                     />
                                                 </td>
 
-                                                <td className="px-5 py-4">
+                                                <td
+                                                    className={`px-5 py-4 ${
+                                                        deal.status !== 'open'
+                                                            ? 'text-muted-foreground'
+                                                            : ''
+                                                    }`}
+                                                >
                                                     {deal.expected_close_date
                                                         ? formatDate(
                                                               deal.expected_close_date,
@@ -264,8 +283,13 @@ export default function DealsIndex({ deals, filters, users, can }: Props) {
                                                 </td>
 
                                                 <td className="px-5 py-4">
-                                                    {deal.assigned_user?.name ??
-                                                        'Unassigned'}
+                                                    {deal.assigned_user ? (
+                                                        deal.assigned_user.name
+                                                    ) : (
+                                                        <span className="text-muted-foreground">
+                                                            Unassigned
+                                                        </span>
+                                                    )}
                                                 </td>
 
                                                 <td className="px-5 py-4">
@@ -371,31 +395,6 @@ export default function DealsIndex({ deals, filters, users, can }: Props) {
             </div>
         </>
     );
-}
-
-function DealBadge({ status }: { status: DealStatus }) {
-    const labels: Record<DealStatus, string> = {
-        open: 'Open',
-        won: 'Won',
-        lost: 'Lost',
-    };
-
-    return <Badge variant="secondary">{labels[status]}</Badge>;
-}
-
-function formatMoney(value: string): string {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    }).format(Number(value));
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-    }).format(new Date(value));
 }
 
 DealsIndex.layout = {
