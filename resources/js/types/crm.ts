@@ -4,6 +4,8 @@ export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
 
 export type DealStatus = 'open' | 'won' | 'lost';
 
+export type TaskPriority = 'low' | 'medium' | 'high';
+
 // Customers
 export type Customer = {
     id: number;
@@ -80,6 +82,51 @@ export type Deal = {
     status: DealStatus;
     expected_close_date: string | null;
     notes: string | null;
+
+    created_at: string;
+    updated_at: string;
+};
+
+export type DealOption = {
+    id: number;
+    title: string;
+};
+
+// Tasks
+export type TaskAssignedUser = {
+    id: number;
+    name: string;
+    email: string;
+};
+
+export type TaskCustomer = {
+    id: number;
+    name: string;
+    company: string | null;
+};
+
+export type TaskDeal = {
+    id: number;
+    title: string;
+};
+
+export type Task = {
+    id: number;
+    title: string;
+    description: string | null;
+
+    assigned_user_id: number | null;
+    assigned_user: TaskAssignedUser | null;
+
+    customer_id: number | null;
+    customer: TaskCustomer | null;
+
+    deal_id: number | null;
+    deal: TaskDeal | null;
+
+    priority: TaskPriority;
+    due_date: string | null;
+    completed: boolean;
 
     created_at: string;
     updated_at: string;

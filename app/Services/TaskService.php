@@ -91,4 +91,14 @@ final readonly class TaskService
     {
         return $this->tasks->userOptions();
     }
+
+    public function setCompleted(
+        Task $task,
+        bool $completed,
+    ): Task {
+        return $this->tasks->setCompleted(
+            $task,
+            $completed,
+        );
+    }
 }

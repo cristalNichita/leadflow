@@ -14,6 +14,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('customers', CustomerController::class);
     Route::resource('leads', LeadController::class);
     Route::resource('deals', DealController::class);
+
+    Route::patch('tasks/{task}/completion', [TaskController::class, 'completion'])->name('tasks.completion');
     Route::resource('tasks', TaskController::class);
 });
 

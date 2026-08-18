@@ -4,6 +4,7 @@ import {
     UsersRound,
     Target,
     Handshake,
+    ListTodo,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -21,6 +22,7 @@ import { dashboard } from '@/routes';
 import { index as customersIndex } from '@/routes/customers';
 import { index as dealsIndex } from '@/routes/deals';
 import { index as leadsIndex } from '@/routes/leads';
+import { index as tasksIndex } from '@/routes/tasks';
 import type { NavItem } from '@/types';
 
 const workspaceItems: NavItem[] = [
@@ -46,6 +48,11 @@ const crmItems: NavItem[] = [
         title: 'Deals',
         href: dealsIndex(),
         icon: Handshake,
+    },
+    {
+        title: 'Tasks',
+        href: tasksIndex(),
+        icon: ListTodo,
     },
 ];
 

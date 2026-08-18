@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\TaskIndexRequest;
+use App\Http\Requests\UpdateTaskCompletionRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
@@ -181,6 +182,25 @@ class TaskController extends Controller
         )->with(
             'success',
             'Task deleted successfully.',
+        );
+    }
+
+    public function completion(
+        UpdateTaskCompletionRequest $request,
+        Task $task,
+    ): RedirectResponse {
+        $completed = $request->boolean('completed');
+
+        $this->tasks->setCompleted(
+            $task,
+            $completed,
+        );
+
+        return back()->with(
+            'success',
+            $completed
+                ? 'Task completed successfully.'
+                : 'Task reopened successfully.',
         );
     }
 }

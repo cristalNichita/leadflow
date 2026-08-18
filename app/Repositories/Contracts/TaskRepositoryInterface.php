@@ -44,4 +44,9 @@ interface TaskRepositoryInterface
      * @return Collection<int, array{id: int, name: string}>
      */
     public function userOptions(): Collection;
+
+    public function setCompleted(
+        Task $task,
+        bool $completed,
+    ): Task;
 }

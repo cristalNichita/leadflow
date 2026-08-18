@@ -153,4 +153,15 @@ final class TaskRepository implements TaskRepositoryInterface
                 ],
             );
     }
+
+    public function setCompleted(
+        Task $task,
+        bool $completed,
+    ): Task {
+        $task->update([
+            'completed' => $completed,
+        ]);
+
+        return $task->refresh();
+    }
 }
