@@ -83,7 +83,7 @@ class CustomerController extends Controller
         $customer = $this->customers->details($customer);
 
         return Inertia::render('customers/show', [
-            'customer' => CustomerResource::make($customer),
+            'customer' => CustomerResource::make($customer)->resolve(),
 
             'can' => [
                 'update' => Gate::allows(
@@ -107,7 +107,7 @@ class CustomerController extends Controller
         );
 
         return Inertia::render('customers/edit', [
-            'customer' => CustomerResource::make($customer),
+            'customer' => CustomerResource::make($customer)->resolve(),
         ]);
     }
 
