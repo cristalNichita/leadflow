@@ -80,4 +80,12 @@ final readonly class LeadService
             'users' => $this->leads->userOptions(),
         ];
     }
+
+    /**
+     * @return Collection<int, array{id: int, name: string}>
+     */
+    public function assigneeOptions(): Collection
+    {
+        return $this->leads->userOptions();
+    }
 }

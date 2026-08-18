@@ -41,11 +41,16 @@ class LeadController extends Controller
 
             'filters' => $filters->toArray(),
 
+            'users' => $this->leads->assigneeOptions(),
+
             'can' => [
                 'create' => Gate::allows(
                     'create',
                     Lead::class,
                 ),
+
+                'manage' => $user->isAdmin()
+                    || $user->isManager(),
             ],
         ]);
     }

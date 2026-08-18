@@ -1,5 +1,7 @@
 export type CustomerStatus = 'active' | 'inactive';
 
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
+
 export type Customer = {
     id: number;
     name: string;
@@ -8,11 +10,41 @@ export type Customer = {
     phone: string | null;
     status: CustomerStatus;
     notes: string | null;
-
     leads_count?: number;
     deals_count?: number;
     tasks_count?: number;
+    created_at: string;
+    updated_at: string;
+};
 
+export type SelectOption = {
+    id: number;
+    name: string;
+};
+
+export type LeadCustomer = {
+    id: number;
+    name: string;
+    company: string | null;
+};
+
+export type LeadAssignedUser = {
+    id: number;
+    name: string;
+    email: string;
+};
+
+export type Lead = {
+    id: number;
+    title: string;
+    customer_id: number;
+    customer: LeadCustomer;
+    assigned_user_id: number | null;
+    assigned_user: LeadAssignedUser | null;
+    estimated_value: string;
+    source: string | null;
+    status: LeadStatus;
+    notes: string | null;
     created_at: string;
     updated_at: string;
 };
